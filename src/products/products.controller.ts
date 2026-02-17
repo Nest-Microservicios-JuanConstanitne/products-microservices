@@ -12,7 +12,10 @@ export class ProductsController {
   //@Post()
   @MessagePattern({ cmd: 'create_product' })
   //create(@Body() createProductDto: CreateProductDto) {
-  create(@Payload() createProductDto: CreateProductDto) {
+  create(
+    @Payload() createProductDto: CreateProductDto
+  ) {
+    console.log(createProductDto)
     return this.productsService.create(createProductDto);
   }
 
@@ -26,7 +29,9 @@ export class ProductsController {
   //@Get(':id')
   @MessagePattern({ cmd: 'find_one_product' })
   //findOne(@Param('id') id: string) {
-  findOne(@Payload('id', ParseIntPipe) id: number) {
+  findOne(
+    @Payload('id', ParseIntPipe) id: number
+  ) {
     return this.productsService.findOne(id);
   }
 
@@ -41,7 +46,10 @@ export class ProductsController {
   //@Delete(':id')
   @MessagePattern({ cmd: 'delete_product' })
   //remove(@Param('id', ParseIntPipe) id: number) {
-  remove(@Payload('id', ParseIntPipe) id: number) {
+  remove(
+    @Payload('id', ParseIntPipe) id: number
+  ) {
+    console.log(id)
     return this.productsService.remove(id);
   }
 }

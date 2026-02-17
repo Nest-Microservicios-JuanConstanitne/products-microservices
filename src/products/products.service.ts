@@ -1,4 +1,5 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from '../prisma.service';
@@ -52,7 +53,10 @@ export class ProductsService {
         where: { id, available: true }
       });
 
-    if (!product) throw new NotFoundException('Product with id not found');
+    if (!product) throw new RpcException({
+      message: `Product with id ${id} not found`,
+      status: HttpStatus.BAD_REQUEST
+    });
 
     return product;
   }
@@ -69,6 +73,8 @@ export class ProductsService {
   }
 
   async remove(id: number) {
+
+    console.log(id)
 
     await this.findOne(id);
 
