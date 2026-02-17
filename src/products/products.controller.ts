@@ -15,7 +15,6 @@ export class ProductsController {
   create(
     @Payload() createProductDto: CreateProductDto
   ) {
-    console.log(createProductDto)
     return this.productsService.create(createProductDto);
   }
 
@@ -49,7 +48,6 @@ export class ProductsController {
   remove(
     @Payload('id', ParseIntPipe) id: number
   ) {
-    console.log(id)
     return this.productsService.remove(id);
   }
 }
