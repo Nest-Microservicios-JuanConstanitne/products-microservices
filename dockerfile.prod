@@ -1,0 +1,47 @@
+# --------------------------
+# 1️⃣ Dependencies
+# --------------------------
+FROM node:20-bullseye AS deps
+
+WORKDIR /usr/src/app
+
+RUN apt-get update -y && apt-get install -y openssl
+
+COPY package*.json ./
+RUN npm ci
+
+# --------------------------
+# 2️⃣ Build
+# --------------------------
+FROM node:20-bullseye AS build
+
+WORKDIR /usr/src/app
+
+RUN apt-get update -y && apt-get install -y openssl
+
+COPY --from=deps /usr/src/app/node_modules ./node_modules
+COPY . .
+
+RUN npx prisma generate
+RUN npm run build
+RUN npm prune --omit=dev
+
+# --------------------------
+# 3️⃣ Production
+# --------------------------
+FROM node:20-bullseye AS prod
+
+WORKDIR /usr/src/app
+
+RUN apt-get update -y && apt-get install -y openssl
+
+COPY --from=build /usr/src/app/node_modules ./node_modules
+COPY --from=build /usr/src/app/dist ./dist
+COPY --from=build /usr/src/app/prisma ./prisma
+COPY --from=build /usr/src/app/package*.json ./
+
+ENV NODE_ENV=production
+
+EXPOSE 3000
+
+CMD ["node", "dist/main.js"]
